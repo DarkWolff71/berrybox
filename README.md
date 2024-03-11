@@ -31,39 +31,51 @@ Before you begin, ensure you have the following installed on your machine:
    cd berrybox
 ```
 
-2. ### Client Setup
+### 2. Client Setup
 
-1. Navigate to the client directory:
-```
-    cd client
-```
+ * Navigate to the client directory:
+    ```
+        cd client
+    ```
+ 
+ * Create an environment file and add the backend API URL:
+    ```
+        touch .env.local
+        echo 'NEXT_PUBLIC_BACKEND_URL="https://a0ndo64qd7.execute-api.ap-south-1.amazonaws.com/getArticle"' > .env.local
+    ```
+ 
+ * Install the dependencies
+    ```
+    pnpm install
+    ```
+ 
+ * Build and start the client application:
+    ```
+        pnpm run build
+        pnpm run start
+    ```
 
-2. Create an environment file and add the backend API URL:
-```
-    touch .env.local
-    echo 'NEXT_PUBLIC_BACKEND_URL="https://a0ndo64qd7.execute-api.ap-south-1.amazonaws.com/getArticle"' > .env.local
-```
+### 3. Server Setup
 
-3. Build and start the client application:
-```
+ * Navigate to the server directory:
+    ```
+    cd ../server
+    ```
+ 
+ * Install the dependencies
+    ```
+    pnpm install
+    ```
+ 
+ * Build the server application:
+    ```
     pnpm run build
-    pnpm run start
-```
-
-### Server Setup
-
-1. Navigate to the server directory:
-   ```
-   cd ../server
-   ```
-3. Build the server application:
-   ```
-   pnpm run build
-   ```
-5. Deploy using Serverless Framework:
-   ```
-   sls deploy
-   ```
+    ```
+ 
+ * Deploy using Serverless Framework:
+    ```
+    sls deploy
+    ```
 
 ## Usage
 
@@ -71,7 +83,9 @@ After the setup, you should have the client application running on your local ma
 
 ## AWS Lamba Routes
 -   GET - https://aqihcjmgac.execute-api.ap-south-1.amazonaws.com/getArticle
+  
     Takes id as a query param, and looks for the article corresponding to the id in the cache. If cache hit, returns the result, and if cache miss, fetches the data from the DynamoDb, populates the cache, and then returns the result.
 
 -   GET - https://aqihcjmgac.execute-api.ap-south-1.amazonaws.com/clearCache
+  
     Clears the entire cache
