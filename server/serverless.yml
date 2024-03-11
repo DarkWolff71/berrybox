@@ -1,0 +1,69 @@
+service: berrybox-api
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  vpc:
+    securityGroupIds:
+      - sg-047aedd4b13964420
+    subnetIds:
+      - subnet-0946852a557159c2e
+      - subnet-07fe34ee74db0c4a7
+      - subnet-01bb5a355cda535fb
+  environment:
+    REDIS_HOST: berrybox-2wma20.serverless.aps1.cache.amazonaws.com
+    REDIS_PORT: 6379
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource: arn:aws:dynamodb:ap-south-1:723516503657:table/ArticlesTable
+        - Effect: Allow
+          Action:
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
+          Resource: "*"
+        - Effect: "Allow"
+          Action:
+            - elasticache:*
+          Resource: arn:aws:elasticache:ap-south-1:723516503657:serverlesscache:berrybox
+
+functions:
+  getArticle:
+    handler: dist/getArticle.handler
+    events:
+      - httpApi:
+          path: /getArticle
+          method: get
+  clearCache:
+    handler: dist/clearCache.handler
+    events:
+      - httpApi:
+          path: /clearCache
+          method: get
+
+package:
+  individually: true
+
+plugins:
+  - serverless-plugin-browserifier
+
+resources:
+  Resources:
+    ArticlesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ArticlesTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
